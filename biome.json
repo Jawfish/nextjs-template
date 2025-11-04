@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.0.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.3/schema.json",
   "files": {
     "includes": ["**", "!**/src/shadcn", "!**/dist"],
     "ignoreUnknown": true
@@ -14,6 +14,12 @@
     "lineEnding": "lf",
     "lineWidth": 88,
     "useEditorconfig": true
+  },
+  "css": {
+    "parser": {
+      "cssModules": false,
+      "tailwindDirectives": true
+    }
   },
   "javascript": {
     "formatter": {
@@ -54,7 +60,8 @@
         "noUnusedTemplateLiteral": "error",
         "useNumberNamespace": "error",
         "noInferrableTypes": "error",
-        "noUselessElse": "error"
+        "noUselessElse": "error",
+        "useComponentExportOnlyModules": "off"
       },
       "nursery": {
         "useSortedClasses": {
