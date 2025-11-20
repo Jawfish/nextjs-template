@@ -22,9 +22,9 @@
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.6",
     "@types/react-dom": "^19.2.3",
-    "@vitest/ui": "^4.0.10",
+    "@vitest/ui": "^4.0.12",
     "tailwindcss": "^4.1.17",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.10"
+    "vitest": "^4.0.12"
   }
 }
