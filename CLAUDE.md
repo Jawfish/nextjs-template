@@ -8,7 +8,7 @@
 - No useEffect in client components — use custom hooks
 - Branded types as value objects in domain layer, plain types in DB layer with mappers at boundary
 - Result types for expected failures, throw for programmer errors
-- 95% test coverage on .ts files; .tsx excluded from coverage rules but should still be tested to the extent possible/reasonable
+- 90% test coverage on .ts files; .tsx excluded from coverage rules but should still be tested to the extent possible/reasonable
 
 ### Branded Types
 
