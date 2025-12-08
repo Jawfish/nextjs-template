@@ -38,6 +38,12 @@ Example refactoring:
 See CLAUDE.md section "Writing Testable Code > Nullables Pattern" for more details.
 `.trim();
 
+function containsVitestMock(text: string): boolean {
+  return (
+    text.includes('vi.mock') || text.includes('vi.spyOn') || text.includes('vi.fn')
+  );
+}
+
 export const noMisleadingTestDoubleNamesRule: Rule = {
   name: 'no-misleading-test-double-names',
   check: (node: Node, filePath: string): LintError | null => {
@@ -46,52 +52,49 @@ export const noMisleadingTestDoubleNamesRule: Rule = {
     }
 
     if (node.type === 'function_declaration') {
-      const nameNode = node.childForFieldName('name');
-      const name = nameNode?.text || '';
-
-      if (name.startsWith('createMock') || name.startsWith('makeMock')) {
-        const bodyText = node.childForFieldName('body')?.text || '';
-        const usesViMock =
-          bodyText.includes('vi.mock') ||
-          bodyText.includes('vi.spyOn') ||
-          bodyText.includes('vi.fn');
-
-        if (!usesViMock) {
-          const position = nameNode?.startPosition || node.startPosition;
-          return {
-            file: filePath,
-            line: position.row + 1,
-            column: position.column + 1,
-            message: ERROR_MESSAGE,
-            ruleName: 'no-misleading-test-double-names'
-          };
-        }
+      // name field is always present for function_declaration per tree-sitter grammar
+      const nameNode = node.childForFieldName('name')!;
+      const name = nameNode.text;
+      if (!name.startsWith('createMock') && !name.startsWith('makeMock')) {
+        return null;
       }
+
+      const bodyNode = node.childForFieldName('body');
+      if (bodyNode && containsVitestMock(bodyNode.text)) {
+        return null;
+      }
+
+      const position = nameNode.startPosition;
+      return {
+        file: filePath,
+        line: position.row + 1,
+        column: position.column + 1,
+        message: ERROR_MESSAGE,
+        ruleName: 'no-misleading-test-double-names'
+      };
     }
 
     if (node.type === 'variable_declarator') {
-      const nameNode = node.childForFieldName('name');
-      const name = nameNode?.text || '';
-
-      if (name.startsWith('mock') && name !== 'mock') {
-        const valueNode = node.childForFieldName('value');
-        const valueText = valueNode?.text || '';
-        const usesViMock =
-          valueText.includes('vi.mock') ||
-          valueText.includes('vi.spyOn') ||
-          valueText.includes('vi.fn');
-
-        if (!usesViMock) {
-          const position = nameNode?.startPosition || node.startPosition;
-          return {
-            file: filePath,
-            line: position.row + 1,
-            column: position.column + 1,
-            message: ERROR_MESSAGE,
-            ruleName: 'no-misleading-test-double-names'
-          };
-        }
+      // name field is always present for variable_declarator per tree-sitter grammar
+      const nameNode = node.childForFieldName('name')!;
+      const name = nameNode.text;
+      if (!name.startsWith('mock') || name === 'mock') {
+        return null;
       }
+
+      const valueNode = node.childForFieldName('value');
+      if (valueNode && containsVitestMock(valueNode.text)) {
+        return null;
+      }
+
+      const position = nameNode.startPosition;
+      return {
+        file: filePath,
+        line: position.row + 1,
+        column: position.column + 1,
+        message: ERROR_MESSAGE,
+        ruleName: 'no-misleading-test-double-names'
+      };
     }
 
     return null;

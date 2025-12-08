@@ -1,0 +1,6 @@
+{
+  "enforcedPaths": [],
+  "exemptPaths": [],
+  "exemptParams": [],
+  "primitives": ["string", "number", "boolean"]
+}

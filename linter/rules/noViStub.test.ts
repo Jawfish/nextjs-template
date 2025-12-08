@@ -94,6 +94,22 @@ describe('no-vi-stub rule', () => {
     expect(errors).toEqual([]);
   });
 
+  test('computed/dynamic call expressions are not flagged', async () => {
+    const linter = new Linter();
+    await linter.init();
+    linter.addRule(noViStubRule);
+
+    const code = `
+      const method = 'stubGlobal';
+      vi[method]('fetch', fake);
+      obj['stubEnv']('NODE_ENV');
+      (getStubFn())('fetch');
+    `;
+
+    const errors = linter.lint('test.ts', code);
+    expect(errors).toEqual([]);
+  });
+
   test('error includes correct line and column', async () => {
     const linter = new Linter();
     await linter.init();

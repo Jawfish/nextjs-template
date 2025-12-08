@@ -34,19 +34,19 @@ See CLAUDE.md for more details on our testing philosophy.
 export const noViMockRule: Rule = {
   name: 'no-vi-mock',
   check: (node: Node, filePath: string): LintError | null => {
-    if (
-      node.type === 'call_expression' &&
-      MOCK_FUNCTIONS.includes(node.childForFieldName('function')?.text ?? '')
-    ) {
-      const position = node.startPosition;
-      return {
-        file: filePath,
-        line: position.row + 1,
-        column: position.column + 1,
-        message: ERROR_MESSAGE,
-        ruleName: 'no-vi-mock'
-      };
-    }
-    return null;
+    if (node.type !== 'call_expression') return null;
+
+    // function field is always present for call_expression per tree-sitter grammar
+    const functionText = node.childForFieldName('function')!.text;
+    if (!MOCK_FUNCTIONS.includes(functionText)) return null;
+
+    const position = node.startPosition;
+    return {
+      file: filePath,
+      line: position.row + 1,
+      column: position.column + 1,
+      message: ERROR_MESSAGE,
+      ruleName: 'no-vi-mock'
+    };
   }
 };

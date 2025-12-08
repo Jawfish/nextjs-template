@@ -31,28 +31,20 @@ function isAllowedToImportShadcn(filePath: string): boolean {
 export const noDirectShadcnImportsRule: Rule = {
   name: 'no-direct-shadcn-imports',
   check: (node: Node, filePath: string): LintError | null => {
-    if (node.type !== 'import_statement') {
-      return null;
-    }
+    if (node.type !== 'import_statement') return null;
 
-    const sourceNode = node.childForFieldName('source');
-    if (!sourceNode) {
-      return null;
-    }
+    // source field is always present for import_statement per tree-sitter grammar
+    const source = node.childForFieldName('source')!.text.replace(/['"]/g, '');
+    if (!isShadcnImport(source)) return null;
+    if (isAllowedToImportShadcn(filePath)) return null;
 
-    const source = sourceNode.text.replace(/['"]/g, '');
-
-    if (isShadcnImport(source) && !isAllowedToImportShadcn(filePath)) {
-      const position = node.startPosition;
-      return {
-        file: filePath,
-        line: position.row + 1,
-        column: position.column + 1,
-        message: ERROR_MESSAGE,
-        ruleName: 'no-direct-shadcn-imports'
-      };
-    }
-
-    return null;
+    const position = node.startPosition;
+    return {
+      file: filePath,
+      line: position.row + 1,
+      column: position.column + 1,
+      message: ERROR_MESSAGE,
+      ruleName: 'no-direct-shadcn-imports'
+    };
   }
 };

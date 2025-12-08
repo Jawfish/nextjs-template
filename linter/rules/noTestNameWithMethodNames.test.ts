@@ -167,4 +167,35 @@ test("when myFunction() is invoked result is returned", () => {
     expect(errors).toHaveLength(1);
     expect(errors[0].ruleName).toBe('no-test-name-with-method-names');
   });
+
+  test('handles template literal test names', async () => {
+    const linter = new Linter();
+    await linter.init();
+    linter.addRule(noTestNameWithMethodNamesRule);
+
+    const code = `
+test(\`dynamic test for \${value}\`, () => {
+  expect(true).toBe(true);
+});
+`;
+
+    const errors = linter.lint('src/test.test.ts', code);
+
+    expect(errors).toHaveLength(0);
+  });
+
+  test('ignores non-test call expressions', async () => {
+    const linter = new Linter();
+    await linter.init();
+    linter.addRule(noTestNameWithMethodNamesRule);
+
+    const code = `
+const result = someFunction("calculateDamage");
+otherFunction("getValue returns");
+`;
+
+    const errors = linter.lint('src/test.test.ts', code);
+
+    expect(errors).toHaveLength(0);
+  });
 });

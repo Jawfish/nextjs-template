@@ -45,8 +45,8 @@ function looksLikeFunctionCall(str: string): boolean {
 }
 
 function extractTestName(node: Node): string | null {
-  const args = node.childForFieldName('arguments');
-  if (!args) return null;
+  // arguments field is always present for call_expression per tree-sitter grammar
+  const args = node.childForFieldName('arguments')!;
 
   for (let i = 0; i < args.namedChildCount; i++) {
     const arg = args.namedChild(i);

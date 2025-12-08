@@ -1,6 +1,6 @@
 {
-  "domainPath": "src/lib/domain",
-  "importAlias": "@/lib/domain",
-  "rootFiles": ["cache"],
+  "domainPath": "src/domain",
+  "importAlias": "@/domain",
+  "rootFiles": [],
   "dependencies": {}
 }

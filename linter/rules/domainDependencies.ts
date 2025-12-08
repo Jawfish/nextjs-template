@@ -117,12 +117,8 @@ export function createDomainDependenciesRule(config: DomainDependenciesConfig): 
         return null;
       }
 
-      const sourceNode = node.childForFieldName('source');
-      if (!sourceNode) {
-        return null;
-      }
-
-      const importSource = sourceNode.text.replace(/['"]/g, '');
+      // source field is always present for import_statement per tree-sitter grammar
+      const importSource = node.childForFieldName('source')!.text.replace(/['"]/g, '');
 
       const toDomain = getDomainFromImport(importSource);
       if (!toDomain) {

@@ -134,4 +134,35 @@ test(someVariable, () => {
 
     expect(errors).toHaveLength(0);
   });
+
+  test('handles template literal test names', async () => {
+    const linter = new Linter();
+    await linter.init();
+    linter.addRule(noTestNameWithShouldRule);
+
+    const code = `
+test(\`dynamic test name \${value}\`, () => {
+  expect(true).toBe(true);
+});
+`;
+
+    const errors = linter.lint('src/test.test.ts', code);
+
+    expect(errors).toHaveLength(0);
+  });
+
+  test('ignores non-test call expressions', async () => {
+    const linter = new Linter();
+    await linter.init();
+    linter.addRule(noTestNameWithShouldRule);
+
+    const code = `
+const result = someFunction("should work");
+otherFunction("should also work");
+`;
+
+    const errors = linter.lint('src/test.test.ts', code);
+
+    expect(errors).toHaveLength(0);
+  });
 });

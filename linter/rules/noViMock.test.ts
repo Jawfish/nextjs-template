@@ -107,4 +107,20 @@ describe('no-vi-mock rule', () => {
     const errors = linter.lint('test.ts', code);
     expect(errors).toEqual([]);
   });
+
+  test('computed/dynamic call expressions are not flagged', async () => {
+    const linter = new Linter();
+    await linter.init();
+    linter.addRule(noViMockRule);
+
+    const code = `
+      const method = 'mock';
+      vi[method]('./api');
+      obj['mock']();
+      (getMockFn())('./api');
+    `;
+
+    const errors = linter.lint('test.ts', code);
+    expect(errors).toEqual([]);
+  });
 });

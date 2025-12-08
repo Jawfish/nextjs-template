@@ -10,6 +10,10 @@ import {
 import { noDirectShadcnImportsRule } from './rules/noDirectShadcnImports';
 import { noInteractionAssertionsRule } from './rules/noInteractionAssertions';
 import { noMisleadingTestDoubleNamesRule } from './rules/noMisleadingTestDoubleNames';
+import {
+  createNoPrimitiveObsessionRule,
+  type NoPrimitiveObsessionConfig
+} from './rules/noPrimitiveObsession';
 import { noSpyOnRule } from './rules/noSpyOn';
 import { noTestNameWithMethodNamesRule } from './rules/noTestNameWithMethodNames';
 import { noTestNameWithShouldRule } from './rules/noTestNameWithShould';
@@ -18,7 +22,8 @@ import { noViMockRule } from './rules/noViMock';
 import { noViMockedRule } from './rules/noViMocked';
 import { noViStubRule } from './rules/noViStub';
 
-const CONFIG_FILE = 'domain-dependencies.json';
+const DOMAIN_CONFIG_FILE = 'domain-dependencies.json';
+const PRIMITIVE_CONFIG_FILE = 'no-primitive-obsession.json';
 
 function findTsFiles(dir: string): string[] {
   const files: string[] = [];
@@ -39,12 +44,21 @@ function findTsFiles(dir: string): string[] {
 }
 
 function loadDomainConfig(): DomainDependenciesConfig | null {
-  if (!existsSync(CONFIG_FILE)) {
+  if (!existsSync(DOMAIN_CONFIG_FILE)) {
     return null;
   }
 
-  const content = readFileSync(CONFIG_FILE, 'utf-8');
+  const content = readFileSync(DOMAIN_CONFIG_FILE, 'utf-8');
   return JSON.parse(content) as DomainDependenciesConfig;
+}
+
+function loadPrimitiveConfig(): NoPrimitiveObsessionConfig | null {
+  if (!existsSync(PRIMITIVE_CONFIG_FILE)) {
+    return null;
+  }
+
+  const content = readFileSync(PRIMITIVE_CONFIG_FILE, 'utf-8');
+  return JSON.parse(content) as NoPrimitiveObsessionConfig;
 }
 
 async function main() {
@@ -56,6 +70,11 @@ async function main() {
   const domainConfig = loadDomainConfig();
   if (domainConfig) {
     linter.addRule(createDomainDependenciesRule(domainConfig));
+  }
+
+  const primitiveConfig = loadPrimitiveConfig();
+  if (primitiveConfig && primitiveConfig.enforcedPaths.length > 0) {
+    linter.addRule(createNoPrimitiveObsessionRule(primitiveConfig));
   }
 
   linter.addRule(noDirectShadcnImportsRule);

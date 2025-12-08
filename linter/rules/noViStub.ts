@@ -38,19 +38,19 @@ See CLAUDE.md for more details on our testing philosophy.
 export const noViStubRule: Rule = {
   name: 'no-vi-stub',
   check: (node: Node, filePath: string): LintError | null => {
-    if (
-      node.type === 'call_expression' &&
-      STUB_FUNCTIONS.includes(node.childForFieldName('function')?.text ?? '')
-    ) {
-      const position = node.startPosition;
-      return {
-        file: filePath,
-        line: position.row + 1,
-        column: position.column + 1,
-        message: ERROR_MESSAGE,
-        ruleName: 'no-vi-stub'
-      };
-    }
-    return null;
+    if (node.type !== 'call_expression') return null;
+
+    // function field is always present for call_expression per tree-sitter grammar
+    const functionText = node.childForFieldName('function')!.text;
+    if (!STUB_FUNCTIONS.includes(functionText)) return null;
+
+    const position = node.startPosition;
+    return {
+      file: filePath,
+      line: position.row + 1,
+      column: position.column + 1,
+      message: ERROR_MESSAGE,
+      ruleName: 'no-vi-stub'
+    };
   }
 };
