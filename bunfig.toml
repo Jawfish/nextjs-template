@@ -1,0 +1,7 @@
+# Bun configuration
+# https://bun.sh/docs/runtime/bunfig
+
+[test]
+# This directory doesn't exist - it's named to remind you to use `bun run test` (vitest)
+# instead of `bun test` (bun's built-in runner which we don't use)
+root = "./use_bun_run_test_not_bun_test"
